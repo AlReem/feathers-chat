@@ -1,8 +1,16 @@
 'use strict';
 
+const process = require('./process');
+
 const globalHooks = require('../../../hooks');
 const hooks = require('feathers-hooks');
 const auth = require('feathers-authentication').hooks;
+
+// Added by Abuzayd
+const populateSender = hooks.populate('sentBy', {
+  service: 'users',
+  field: 'userId'
+});
 
 
 exports.before = {
@@ -13,17 +21,17 @@ exports.before = {
   ],
   find: [],
   get: [],
-  create: [],
-  update: [],
-  patch: [],
+  create: [process()],
+  update: [hooks.remove('sentBy')],
+  patch: [hooks.remove('sentBy')],
   remove: []
 };
 
 exports.after = {
   all: [],
-  find: [],
-  get: [],
-  create: [],
+  find: [populateSender],
+  get: [populateSender],
+  create: [populateSender],
   update: [],
   patch: [],
   remove: []
